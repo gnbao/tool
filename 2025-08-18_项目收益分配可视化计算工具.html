@@ -42,10 +42,10 @@
             }
             /* Adjusted chart container styles */
             .chart-container {
-                @apply relative h-[400px]; /* Set a fixed height for the container */
+                @apply relative h-[50vh]; /* Set height relative to viewport height for mobile responsiveness */
             }
             .chart-container > canvas {
-                @apply absolute w-full h-full; /* Make the canvas fill the container */
+                @apply w-full h-full; /* The canvas fills the container without absolute positioning */
             }
         }
     </style>
@@ -620,7 +620,7 @@
             const baseResult = runSimulation(baseRates);
             
             // 更新UI
-            updateUI(baseResult.monthlyData, { contractAmount, advancePayment, companySalesRate, middlemanAdvanceRate, ...baseResult });
+            updateUI(baseResult.monthlyData, { contractAmount, advancePayment, companyTotal: baseResult.companyTotal, hospitalTotal: baseResult.hospitalTotal, doctorTotal: baseResult.doctorTotal, middlemanTotal: baseResult.middlemanTotal, companySalesRate, middlemanAdvanceRate, completionMonth: baseResult.completionMonth });
             
             // 更新对比方案表格和图表
             updateComparisonUI(baseResult.companyTotal, baseResult.monthlyData);
