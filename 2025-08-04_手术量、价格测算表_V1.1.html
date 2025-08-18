@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>骨科手术机器人项目合作测算工具</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 保持原有样式不变 */
+        :root {
+            --primary: #2c6fbb;
+            --primary-dark: #1a508f;
+            --secondary: #28a745;
+            --accent: #ff6b35;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border: #dee2e6;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #f5f9ff 0%, #e6f0ff 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px 35px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .date {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        h2 {
+            font-size: 22px;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2 i {
+            font-size: 24px;
+        }
+        
+        .card-content {
+            padding: 10px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+        
+        th, td {
+            padding: 14px 15px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(44, 111, 187, 0.03);
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            text-align: center;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-calculate {
+            background-color: var(--secondary);
+            padding: 14px 30px;
+            font-size: 16px;
+            display: block;
+            margin: 30px auto;
+        }
+        
+        .result-cell {
+            background-color: #edf5ff;
+            font-weight: 600;
+            color: #1a3c6c;
+        }
+        
+        .chart-container {
+            height: 350px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            border-top: 4px solid var(--primary);
+        }
+        
+        .summary-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+        
+        .summary-label {
+            color: var(--gray);
+            font-size: 16px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin: 30px 0 20px;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background-color: rgba(44, 111, 187, 0.05);
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: var(--primary);
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .instructions {
+            background: #e8f4ff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .instructions ul {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .year-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(44, 111, 187, 0.03);
+            border-radius: 10px;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 992px) {
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .percentage-hint {
+            font-size: 13px;
+            color: var(--gray);
+            text-align: center;
+            margin: 5px 0;
+            font-style: italic;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 id="projectName">骨科手术机器人项目合作测算工具</h1>
+                <div class="date" id="currentDate">2025年8月4日 星期一</div>
+            </div>
+        </header>
+        
+        <div class="instructions">
+            <strong>使用说明：</strong>
+            <ul>
+                <li>填写项目基本信息和产品相关参数</li>
+                <li>价格权重和收益分配比例请填写百分比数值</li>
+                <li>点击"计算全部结果"按钮生成测算数据</li>
+                <li>修改任意参数后需重新计算以更新结果</li>
+                <li>使用标签页切换查看不同维度的分析结果</li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-info-circle"></i> 项目基本信息</h2>
+            </div>
+            <div class="card-content">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th width="25%">参数</th>
+                            <th width="35%">值</th>
+                            <th width="15%">单位</th>
+                            <th width="25%">说明</th>
+                        </tr>
+                        <tr>
+                            <td class="required" id="totalSurgeriesLabel">总手术量</td>
+                            <td><input type="number" id="totalSurgeries" value="2500" min="1"></td>
+                            <td>台</td>
+                            <td>项目周期内计划总手术量</td>
+                        </tr>
+                        <tr>
+                            <td class="required" id="projectDurationLabel">项目周期</td>
+                            <td><input type="number" id="projectDuration" value="3" min="1" max="10" onchange="updateProjectDuration()"></td>
+                            <td>年</td>
+                            <td>项目合作持续时间</td>
+                        </tr>
+                        <tr>
+                            <td class="required" id="projectTargetLabel">项目目标</td>
+                            <td><input type="number" id="projectTarget" value="3000000"></td>
+                            <td>元</td>
+                            <td>项目周期内计划总收益</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-cubes"></i> 产品信息与价格梯度</h2>
+            </div>
+            <div class="card-content">
+                <div class="percentage-hint">提示：使用率请填写百分比数值（如60表示60%）</div>
+                <div class="table-container">
+                    <table id="productTable">
+                        <thead>
+                            <tr>
+                                <th width="12%">产品</th>
+                                <th width="10%">使用率 (%)</th>
+                                <th width="8%">价格1 (元)</th>
+                                <th width="8%">价格2 (元)</th>
+                                <th width="8%">价格3 (元)</th>
+                                <th width="8%">价格4 (元)</th>
+                                <th width="8%">价格5 (元)</th>
+                                <th width="8%">价格6 (元)</th>
+                                <th width="15%">加权平均价格 (元)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody">
+                            <!-- 产品数据将由JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-balance-scale"></i> 价格权重设置</h2>
+            </div>
+            <div class="card-content">
+                <div class="percentage-hint">提示：权重请填写百分比数值（总和应为100%）</div>
+                <div class="table-container">
+                    <table id="weightTable">
+                        <thead>
+                            <tr>
+                                <th width="12%">产品</th>
+                                <th width="10%">权重和</th>
+                                <th width="12%">价格1权重 (%)</th>
+                                <th width="12%">价格2权重 (%)</th>
+                                <th width="12%">价格3权重 (%)</th>
+                                <th width="12%">价格4权重 (%)</th>
+                                <th width="12%">价格5权重 (%)</th>
+                                <th width="12%">价格6权重 (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weightTableBody">
+                            <!-- 权重数据将由JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-money-bill-wave"></i> 收益分配比例</h2>
+            </div>
+            <div class="card-content">
+                <div class="percentage-hint">提示：比例请填写百分比数值（总和应为100%）</div>
+                <div class="table-container">
+                    <table id="shareTable">
+                        <thead>
+                            <tr>
+                                <th width="25%">参与方</th>
+                                <th width="25%">比例 (%)</th>
+                                <th width="50%">说明</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shareTableBody">
+                            <!-- 分配比例数据将由JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <button class="btn btn-calculate" onclick="calculateAll()">
+                    <i class="fas fa-calculator"></i> 计算全部结果
+                </button>
+            </div>
+        </div>
+        
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-label">总目标手术量</div>
+                <div class="summary-value" id="targetSurgeries">1,027</div>
+                <div class="summary-label">台</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">项目周期产值</div>
+                <div class="summary-value" id="totalOutput">3,000,000</div>
+                <div class="summary-label">元</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label" id="companyProfitLabel">公司收益</div>
+                <div class="summary-value" id="companyProfit">1,800,000</div>
+                <div class="summary-label">元</div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('surgery-plan')">手术计划</div>
+            <div class="tab" onclick="switchTab('annual-plan')">年度计划</div>
+            <div class="tab" onclick="switchTab('revenue')">收益分配</div>
+            <div class="tab" onclick="switchTab('charts')">趋势图表</div>
+        </div>
+        
+        <div id="surgery-plan" class="tab-content active">
+            <div class="section-title">计划手术量预测</div>
+            <div class="table-container">
+                <table id="surgeryPlanTable">
+                    <thead>
+                        <tr>
+                            <th>产品</th>
+                            <th>计划手术量 (台)</th>
+                            <th>价格1手术量</th>
+                            <th>价格2手术量</th>
+                            <th>价格3手术量</th>
+                            <th>价格4手术量</th>
+                            <th>价格5手术量</th>
+                            <th>价格6手术量</th>
+                        </tr>
+                    </thead>
+                    <tbody id="surgeryPlanTableBody">
+                        <!-- 手术计划数据将由JavaScript动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section-title">产值预测</div>
+            <div class="table-container">
+                <table id="outputPlanTable">
+                    <thead>
+                        <tr>
+                            <th>产品</th>
+                            <th>总产值 (元)</th>
+                            <th>价格1产值</th>
+                            <th>价格2产值</th>
+                            <th>价格3产值</th>
+                            <th>价格4产值</th>
+                            <th>价格5产值</th>
+                            <th>价格6产值</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outputPlanTableBody">
+                        <!-- 产值预测数据将由JavaScript动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="annual-plan" class="tab-content">
+            <div class="section-title">年度计划</div>
+            <div class="percentage-hint">提示：各年度完成率总和应等于100%</div>
+            <div id="completionError" class="error-message">错误：各年度完成率总和不等于100%</div>
+            <div class="table-container">
+                <table id="annualPlanTable">
+                    <thead>
+                        <tr>
+                            <th>周期</th>
+                            <th>完成率 (%)</th>
+                            <th>手术量 (台)</th>
+                            <th>覆盖率 (%)</th>
+                            <th>产值 (元)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="annualPlanBody">
+                        <!-- 年度计划行将由JavaScript动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="yearSectionsContainer">
+                <!-- 年度设备分布部分将由JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div id="revenue" class="tab-content">
+            <div class="section-title">收益分配（按产品）</div>
+            <div class="table-container">
+                <table id="productRevenueTable">
+                    <thead>
+                        <tr>
+                            <th>收益分配</th>
+                            <th>总收益 (元)</th>
+                            <!-- 产品列将由JavaScript动态生成 -->
+                        </tr>
+                    </thead>
+                    <tbody id="productRevenueBody">
+                        <!-- 收益分配行将由JavaScript动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section-title">收益分配（按年度）</div>
+            <div class="table-container">
+                <table id="annualRevenueTable">
+                    <thead>
+                        <tr>
+                            <th>收益分配</th>
+                            <!-- 年度列将由JavaScript动态生成 -->
+                            <th>总计 (元)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="annualRevenueBody">
+                        <!-- 年度收益行将由JavaScript动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="charts" class="tab-content">
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">手术量走势预测</div>
+                    <div class="chart-container">
+                        <canvas id="surgeryChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">年度收益对比</div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">产品收益分布</div>
+                    <div class="chart-container">
+                        <canvas id="productDistributionChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">各年度手术量对比</div>
+                    <div class="chart-container">
+                        <canvas id="surgeryComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 骨科手术机器人项目合作测算工具 | 数据仅供参考，实际结果以最终核算为准</p>
+        </footer>
+    </div>
+    <script>
+        // 【字段配置区 - 可自定义修改字段名称】
+        const FieldConfig = {
+            // 项目信息
+            projectName: "骨科手术机器人项目合作测算工具",
+            totalSurgeriesLabel: "总手术量",
+            projectDurationLabel: "项目周期",
+            projectTargetLabel: "项目目标",
+            
+            // 产品信息
+            product1: "SY-001(天眼)",
+            product2: "MS-002P（2代机）",
+            product3: "1代机",
+            product4: "YX-100（骨折复位）",
+            
+            // 收益分配
+            hospitalLabel: "医院",
+            doctorLabel: "医生",
+            companyLabel: "公司",
+            brokerLabel: "中间人"
+        };
+        
+        // 【产品和收益配置 - 可自定义修改】
+        // 产品信息配置
+        const products = [
+            { id: 1, nameKey: "product1", usage: 60,
+              prices: [1500, 2000, 2500, "", "", ""],
+              weights: [0, 100, 0, 0, 0, 0] },
+            { id: 2, nameKey: "product2", usage: 40,
+              prices: [3500, 4000, 5000, 6000, 7000, 8000],
+              weights: [10, 70, 10, 5, 3, 2] },
+            { id: 3, nameKey: "product3", usage: 0,
+              prices: [3000, 3500, 4000, 4500, 5000, 5500],
+              weights: [60, 10, 10, 10, 5, 5] },
+            { id: 4, nameKey: "product4", usage: 0,
+              prices: [1000, 1500, 2000, "", "", ""],
+              weights: [100, 0, 0, 0, 0, 0] }
+        ];
+        
+        // 收益分配参与方配置
+        const revenueParticipants = [
+            { id: "hospital", nameKey: "hospitalLabel", ratio: 20, description: "医院分成比例" },
+            { id: "doctor", nameKey: "doctorLabel", ratio: 20, description: "医生团队分成比例" },
+            { id: "company", nameKey: "companyLabel", ratio: 60, description: "设备提供公司分成比例" },
+            { id: "broker", nameKey: "brokerLabel", ratio: 0, description: "项目中介分成比例" }
+        ];
+        
+        // 覆盖率计算公式说明（可根据需要修改）
+        const coverageFormula = "覆盖率 = (当年该产品手术量 / 该产品总手术量) × 100%";
+        
+        // 【系统状态 - 一般不需要修改】
+        const state = {
+            projectDuration: 3,
+            annualCompletions: [25, 30, 45], // 默认完成率百分比
+            productData: {
+                surgeryCounts: [], // 各产品的手术量
+                outputs: [], // 各产品的产值
+                avgPrices: [] // 各产品的平均价格
+            }
+        };
+        
+        // 图表实例
+        let surgeryChart, revenueChart, productDistributionChart, surgeryComparisonChart;
+        
+        // 页面加载时初始化
+        window.onload = function() {
+            // 应用字段配置
+            applyFieldConfig();
+            
+            // 初始化日期显示
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('zh-CN', options);
+            
+            // 初始化产品表格
+            initProductTables();
+            // 初始化收益分配表格
+            initShareTable();
+            // 更新项目周期相关内容
+            updateProjectDuration();
+            // 初始化图表
+            initCharts();
+            // 初始检查完成率总和
+            checkCompletionSum();
+        };
+        
+        // 应用字段配置到界面
+        function applyFieldConfig() {
+            document.getElementById('projectName').textContent = FieldConfig.projectName;
+            document.getElementById('totalSurgeriesLabel').textContent = FieldConfig.totalSurgeriesLabel;
+            document.getElementById('projectDurationLabel').textContent = FieldConfig.projectDurationLabel;
+            document.getElementById('projectTargetLabel').textContent = FieldConfig.projectTargetLabel;
+            document.getElementById('companyProfitLabel').textContent = `${FieldConfig.companyLabel}收益`;
+        }
+        
+        // 初始化产品表格（产品信息与价格梯度、价格权重设置）
+        function initProductTables() {
+            const productTableBody = document.getElementById('productTableBody');
+            const weightTableBody = document.getElementById('weightTableBody');
+            
+            productTableBody.innerHTML = '';
+            weightTableBody.innerHTML = '';
+            
+            products.forEach(product => {
+                // 获取产品名称
+                const productName = FieldConfig[product.nameKey] || product.nameKey;
+                
+                // 产品信息与价格梯度行
+                const productRow = document.createElement('tr');
+                let productRowHtml = `<td>${productName}</td>`;
+                productRowHtml += `<td><input type="number" id="usage${product.id}" value="${product.usage}" min="0" max="100"></td>`;
+                
+                // 价格梯度（6个）
+                product.prices.forEach((price, index) => {
+                    productRowHtml += `<td><input type="number" id="price${product.id}_${index+1}" value="${price || ''}"></td>`;
+                });
+                
+                productRowHtml += `<td class="result-cell" id="avgPrice${product.id}">0</td>`;
+                productRow.innerHTML = productRowHtml;
+                productTableBody.appendChild(productRow);
+                
+                // 价格权重设置行
+                const weightRow = document.createElement('tr');
+                let weightRowHtml = `<td>${productName}</td>`;
+                weightRowHtml += `<td class="result-cell" id="weightSum${product.id}">100%</td>`;
+                
+                // 权重设置（6个）
+                product.weights.forEach((weight, index) => {
+                    weightRowHtml += `<td><input type="number" id="weight${product.id}_${index+1}" value="${weight}" min="0" max="100"></td>`;
+                });
+                
+                weightRow.innerHTML = weightRowHtml;
+                weightTableBody.appendChild(weightRow);
+            });
+        }
+        
+        // 初始化收益分配表格
+        function initShareTable() {
+            const shareTableBody = document.getElementById('shareTableBody');
+            shareTableBody.innerHTML = '';
+            
+            revenueParticipants.forEach(participant => {
+                // 获取参与方名称
+                const participantName = FieldConfig[participant.nameKey] || participant.nameKey;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${participantName}</td>
+                    <td><input type="number" id="${participant.id}Share" value="${participant.ratio}" min="0" max="100"></td>
+                    <td>${participant.description}</td>
+                `;
+                shareTableBody.appendChild(row);
+            });
+        }
+        
+        // 更新项目周期
+        function updateProjectDuration() {
+            const duration = parseInt(document.getElementById('projectDuration').value) || 3;
+            state.projectDuration = duration;
+            
+            // 调整完成率数组长度
+            if (state.annualCompletions.length > duration) {
+                state.annualCompletions = state.annualCompletions.slice(0, duration);
+            } else {
+                while (state.annualCompletions.length < duration) {
+                    // 新增年份默认完成率为前一年的1.2倍，不超过100%
+                    const lastValue = state.annualCompletions[state.annualCompletions.length - 1] || 25;
+                    const newValue = Math.min(Math.round(lastValue * 1.2), 100);
+                    state.annualCompletions.push(newValue);
+                }
+            }
+            
+            // 确保完成率总和为100%
+            normalizeCompletions();
+            
+            // 更新年度计划表格
+            updateAnnualPlanTable();
+            // 更新年度设备分布部分
+            updateYearSections();
+            // 更新手术计划和产值预测表格
+            updateSurgeryAndOutputTables();
+            // 更新收益分配表格
+            updateRevenueTables();
+            // 重新初始化图表
+            initCharts();
+            // 检查完成率总和
+            checkCompletionSum();
+        }
+        
+        // 确保完成率总和为100%
+        function normalizeCompletions() {
+            const sum = state.annualCompletions.reduce((acc, val) => acc + val, 0);
+            if (sum === 0) return;
+            
+            // 按比例调整，使总和为100
+            const ratio = 100 / sum;
+            state.annualCompletions = state.annualCompletions.map(val => Math.round(val * ratio));
+            
+            // 再次检查总和，处理四舍五入误差
+            const newSum = state.annualCompletions.reduce((acc, val) => acc + val, 0);
+            if (newSum !== 100) {
+                const diff = 100 - newSum;
+                // 调整最后一个值
+                state.annualCompletions[state.annualCompletions.length - 1] += diff;
+            }
+        }
+        
+        // 检查完成率总和是否为100%
+        function checkCompletionSum() {
+            const sum = state.annualCompletions.reduce((acc, val) => acc + val, 0);
+            const errorElement = document.getElementById('completionError');
+            
+            if (Math.abs(sum - 100) > 0.1) {
+                errorElement.style.display = 'block';
+                return false;
+            } else {
+                errorElement.style.display = 'none';
+                return true;
+            }
+        }
+        
+        // 更新年度计划表格
+        function updateAnnualPlanTable() {
+            const tbody = document.getElementById('annualPlanBody');
+            tbody.innerHTML = '';
+            
+            for (let year = 1; year <= state.projectDuration; year++) {
+                const completion = state.annualCompletions[year-1] || 0;
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>第${year}年</td>
+                    <td><input type="number" class="completion-input" data-year="${year}" value="${completion}" min="0" max="100"></td>
+                    <td class="result-cell annual-surgery" id="annualSurgery${year}">0</td>
+                    <td class="result-cell coverage" id="coverage${year}">0%</td>
+                    <td class="result-cell annual-output" id="annualOutput${year}">0</td>
+                `;
+                
+                tbody.appendChild(row);
+            }
+            
+            // 添加事件监听器
+            document.querySelectorAll('.completion-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const year = parseInt(this.dataset.year);
+                    state.annualCompletions[year-1] = parseFloat(this.value) || 0;
+                    
+                    // 检查完成率总和
+                    if (!checkCompletionSum()) {
+                        // 如果总和不对，自动调整最后一年的值
+                        const sum = state.annualCompletions.reduce((acc, val, idx) => {
+                            // 不计算当前修改的年份
+                            return idx === year-1 ? acc : acc + val;
+                        }, 0);
+                        
+                        // 计算最后一年应有的值
+                        const lastYear = state.projectDuration;
+                        const lastYearValue = 100 - sum;
+                        
+                        // 确保值在有效范围内
+                        if (lastYearValue < 0) {
+                            state.annualCompletions = state.annualCompletions.map((val, idx) => 
+                                idx === year-1 ? val - (sum + val - 100) : val
+                            );
+                        } else if (lastYearValue > 100) {
+                            state.annualCompletions = state.annualCompletions.map((val, idx) => 
+                                idx === year-1 ? 100 - (sum - val) : val
+                            );
+                        } else {
+                            state.annualCompletions[lastYear - 1] = lastYearValue;
+                        }
+                        
+                        // 更新输入框显示
+                        document.querySelector(`.completion-input[data-year="${lastYear}"]`).value = 
+                            Math.round(state.annualCompletions[lastYear - 1]);
+                    }
+                    
+                    calculateAnnualPlan();
+                });
+            });
+        }
+        
+        // 更新手术计划和产值预测表格
+        function updateSurgeryAndOutputTables() {
+            const surgeryPlanBody = document.getElementById('surgeryPlanTableBody');
+            const outputPlanBody = document.getElementById('outputPlanTableBody');
+            
+            surgeryPlanBody.innerHTML = '';
+            outputPlanBody.innerHTML = '';
+            
+            products.forEach(product => {
+                // 获取产品名称
+                const productName = FieldConfig[product.nameKey] || product.nameKey;
+                
+                // 手术计划行
+                const surgeryRow = document.createElement('tr');
+                let surgeryRowHtml = `<td>${productName}</td>`;
+                surgeryRowHtml += `<td class="result-cell" id="planSurgery${product.id}">0</td>`;
+                
+                // 6个价格档位的手术量
+                for (let i = 1; i <= 6; i++) {
+                    surgeryRowHtml += `<td class="result-cell" id="surgery${product.id}_${i}">0</td>`;
+                }
+                
+                surgeryRow.innerHTML = surgeryRowHtml;
+                surgeryPlanBody.appendChild(surgeryRow);
+                
+                // 产值预测行
+                const outputRow = document.createElement('tr');
+                let outputRowHtml = `<td>${productName}</td>`;
+                outputRowHtml += `<td class="result-cell" id="output${product.id}">0</td>`;
+                
+                // 6个价格档位的产值
+                for (let i = 1; i <= 6; i++) {
+                    outputRowHtml += `<td class="result-cell" id="output${product.id}_${i}">0</td>`;
+                }
+                
+                outputRow.innerHTML = outputRowHtml;
+                outputPlanBody.appendChild(outputRow);
+            });
+        }
+        
+        // 更新年度设备分布部分
+        function updateYearSections() {
+            const container = document.getElementById('yearSectionsContainer');
+            container.innerHTML = '';
+            
+            for (let year = 1; year <= state.projectDuration; year++) {
+                const yearSection = document.createElement('div');
+                yearSection.className = 'year-section';
+                yearSection.innerHTML = `<h3>第${year}年设备分布</h3>`;
+                
+                const tableContainer = document.createElement('div');
+                tableContainer.className = 'table-container';
+                
+                const table = document.createElement('table');
+                let tableHtml = `
+                    <thead>
+                        <tr>
+                            <th>产品</th>
+                            <th>手术量 (台)</th>
+                            <th>占比 (%)</th>
+                            <th>产值 (元)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="yearSurgeryBody${year}">
+                `;
+                
+                products.forEach(product => {
+                    // 获取产品名称
+                    const productName = FieldConfig[product.nameKey] || product.nameKey;
+                    tableHtml += `
+                        <tr>
+                            <td>${productName}</td>
+                            <td class="result-cell" id="year${year}Surgery${product.id}">0</td>
+                            <td class="result-cell" id="year${year}Ratio${product.id}">0%</td>
+                            <td class="result-cell" id="year${year}Output${product.id}">0</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHtml += `</tbody></table>`;
+                table.innerHTML = tableHtml;
+                tableContainer.appendChild(table);
+                yearSection.appendChild(tableContainer);
+                container.appendChild(yearSection);
+            }
+        }
+        
+        // 更新收益分配表格
+        function updateRevenueTables() {
+            // 产品收益表格
+            const productRevenueTable = document.getElementById('productRevenueTable');
+            const productRevenueHead = productRevenueTable.querySelector('thead tr');
+            const productRevenueBody = document.getElementById('productRevenueBody');
+            
+            // 清除现有产品列
+            while (productRevenueHead.children.length > 2) {
+                productRevenueHead.removeChild(productRevenueHead.lastChild);
+            }
+            
+            // 添加产品列
+            products.forEach(product => {
+                const productName = FieldConfig[product.nameKey] || product.nameKey;
+                const th = document.createElement('th');
+                th.textContent = productName;
+                productRevenueHead.appendChild(th);
+            });
+            
+            // 清空表格内容
+            productRevenueBody.innerHTML = '';
+            
+            // 添加收益分配行
+            revenueParticipants.forEach(participant => {
+                const participantName = FieldConfig[participant.nameKey] || participant.nameKey;
+                const row = document.createElement('tr');
+                let rowHtml = `<td>${participantName}</td>`;
+                rowHtml += `<td class="result-cell" id="${participant.id}TotalRevenue">0</td>`;
+                
+                products.forEach(product => {
+                    rowHtml += `<td class="result-cell" id="${participant.id}Revenue${product.id}">0</td>`;
+                });
+                
+                row.innerHTML = rowHtml;
+                productRevenueBody.appendChild(row);
+            });
+            
+            // 年度收益表格
+            const annualRevenueTable = document.getElementById('annualRevenueTable');
+            const annualRevenueHead = annualRevenueTable.querySelector('thead tr');
+            const annualRevenueBody = document.getElementById('annualRevenueBody');
+            
+            // 清除现有年度列
+            while (annualRevenueHead.children.length > 1) {
+                annualRevenueHead.removeChild(annualRevenueHead.firstChild.nextSibling);
+            }
+            
+            // 添加年度列
+            for (let year = 1; year <= state.projectDuration; year++) {
+                const th = document.createElement('th');
+                th.textContent = `第${year}年`;
+                annualRevenueHead.insertBefore(th, annualRevenueHead.lastChild);
+            }
+            
+            // 清空表格内容
+            annualRevenueBody.innerHTML = '';
+            
+            // 添加收益分配行
+            revenueParticipants.forEach(participant => {
+                const participantName = FieldConfig[participant.nameKey] || participant.nameKey;
+                const row = document.createElement('tr');
+                let rowHtml = `<td>${participantName}</td>`;
+                
+                for (let year = 1; year <= state.projectDuration; year++) {
+                    rowHtml += `<td class="result-cell" id="${participant.id}Year${year}Revenue">0</td>`;
+                }
+                
+                rowHtml += `<td class="result-cell" id="${participant.id}AllYearRevenue">0</td>`;
+                row.innerHTML = rowHtml;
+                annualRevenueBody.appendChild(row);
+            });
+        }
+        
+        // 初始化图表
+        function initCharts() {
+            // 销毁现有图表（如果存在）
+            if (surgeryChart) surgeryChart.destroy();
+            if (revenueChart) revenueChart.destroy();
+            if (productDistributionChart) productDistributionChart.destroy();
+            if (surgeryComparisonChart) surgeryComparisonChart.destroy();
+            
+            // 手术量走势预测图表
+            const surgeryCtx = document.getElementById('surgeryChart').getContext('2d');
+            surgeryChart = new Chart(surgeryCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: state.projectDuration}, (_, i) => `第${i+1}年`),
+                    datasets: products.map((product, index) => {
+                        const productName = FieldConfig[product.nameKey] || product.nameKey;
+                        return {
+                            label: productName,
+                            data: Array(state.projectDuration).fill(0),
+                            borderColor: getChartColor(index),
+                            backgroundColor: getChartColor(index, 0.1),
+                            tension: 0.3,
+                            fill: true
+                        };
+                    })
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '手术量 (台)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 年度收益对比图表
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            revenueChart = new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: state.projectDuration}, (_, i) => `第${i+1}年`),
+                    datasets: revenueParticipants.map((participant, index) => {
+                        const participantName = FieldConfig[participant.nameKey] || participant.nameKey;
+                        return {
+                            label: participantName,
+                            data: Array(state.projectDuration).fill(0),
+                            backgroundColor: getChartColor(index)
+                        };
+                    })
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '收益 (元)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 产品收益分布图表
+            const productDistributionCtx = document.getElementById('productDistributionChart').getContext('2d');
+            productDistributionChart = new Chart(productDistributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: products.map(product => FieldConfig[product.nameKey] || product.nameKey),
+                    datasets: [{
+                        data: products.map(() => 0),
+                        backgroundColor: products.map((_, index) => getChartColor(index))
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+            
+            // 各年度手术量对比图表
+            const surgeryComparisonCtx = document.getElementById('surgeryComparisonChart').getContext('2d');
+            surgeryComparisonChart = new Chart(surgeryComparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: products.map(product => FieldConfig[product.nameKey] || product.nameKey),
+                    datasets: Array.from({length: state.projectDuration}, (_, yearIndex) => {
+                        const year = yearIndex + 1;
+                        return {
+                            label: `第${year}年`,
+                            data: products.map(() => 0),
+                            backgroundColor: getChartColor(yearIndex)
+                        };
+                    })
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '手术量 (台)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 获取图表颜色
+        function getChartColor(index, alpha = 1) {
+            const colors = [
+                'rgba(54, 162, 235, ' + alpha + ')',
+                'rgba(75, 192, 192, ' + alpha + ')',
+                'rgba(255, 99, 132, ' + alpha + ')',
+                'rgba(255, 159, 64, ' + alpha + ')',
+                'rgba(255, 205, 86, ' + alpha + ')',
+                'rgba(153, 102, 255, ' + alpha + ')',
+                'rgba(201, 203, 207, ' + alpha + ')'
+            ];
+            return colors[index % colors.length];
+        }
+        
+        // 切换标签页
+        function switchTab(tabId) {
+            // 移除所有标签的active类
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 激活当前标签和内容
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // 计算全部结果
+        function calculateAll() {
+            // 计算加权平均价格
+            calculateAveragePrices();
+            // 计算手术计划和产值
+            calculateSurgeryAndOutput();
+            // 计算年度计划
+            calculateAnnualPlan();
+            // 计算收益分配
+            calculateRevenueDistribution();
+            // 更新图表数据
+            updateCharts();
+            // 更新摘要信息
+            updateSummary();
+        }
+        
+        // 计算加权平均价格
+        function calculateAveragePrices() {
+            products.forEach(product => {
+                let total = 0;
+                let weightSum = 0;
+                
+                for (let i = 0; i < 6; i++) {
+                    const price = parseFloat(document.getElementById(`price${product.id}_${i+1}`).value) || 0;
+                    const weight = parseFloat(document.getElementById(`weight${product.id}_${i+1}`).value) || 0;
+                    
+                    total += price * weight;
+                    weightSum += weight;
+                }
+                
+                // 计算权重总和并显示
+                document.getElementById(`weightSum${product.id}`).textContent = `${weightSum}%`;
+                
+                // 计算平均价格
+                const avgPrice = weightSum > 0 ? total / weightSum : 0;
+                document.getElementById(`avgPrice${product.id}`).textContent = avgPrice.toFixed(2);
+                
+                // 保存到状态
+                if (!state.productData.avgPrices[product.id-1]) {
+                    state.productData.avgPrices[product.id-1] = 0;
+                }
+                state.productData.avgPrices[product.id-1] = avgPrice;
+            });
+        }
+        
+        // 计算手术计划和产值
+        function calculateSurgeryAndOutput() {
+            const totalSurgeries = parseInt(document.getElementById('totalSurgeries').value) || 0;
+            let totalOutput = 0;
+            
+            products.forEach(product => {
+                const usage = parseFloat(document.getElementById(`usage${product.id}`).value) || 0;
+                const productSurgery = Math.round(totalSurgeries * (usage / 100));
+                const avgPrice = state.productData.avgPrices[product.id-1] || 0;
+                const productOutput = productSurgery * avgPrice;
+                
+                // 保存到状态
+                state.productData.surgeryCounts[product.id-1] = productSurgery;
+                state.productData.outputs[product.id-1] = productOutput;
+                
+                // 更新手术量
+                document.getElementById(`planSurgery${product.id}`).textContent = productSurgery;
+                
+                // 更新各价格档位的手术量和产值
+                let priceSurgerySum = 0;
+                let priceOutputSum = 0;
+                
+                for (let i = 0; i < 6; i++) {
+                    const weight = parseFloat(document.getElementById(`weight${product.id}_${i+1}`).value) || 0;
+                    const price = parseFloat(document.getElementById(`price${product.id}_${i+1}`).value) || 0;
+                    
+                    const priceSurgery = Math.round(productSurgery * (weight / 100));
+                    const priceOutput = priceSurgery * price;
+                    
+                    document.getElementById(`surgery${product.id}_${i+1}`).textContent = priceSurgery;
+                    document.getElementById(`output${product.id}_${i+1}`).textContent = formatNumber(priceOutput);
+                    
+                    priceSurgerySum += priceSurgery;
+                    priceOutputSum += priceOutput;
+                }
+                
+                // 处理四舍五入导致的差异
+                if (priceSurgerySum !== productSurgery) {
+                    const diff = productSurgery - priceSurgerySum;
+                    document.getElementById(`surgery${product.id}_1`).textContent = 
+                        parseInt(document.getElementById(`surgery${product.id}_1`).textContent) + diff;
+                }
+                
+                // 更新总产值
+                document.getElementById(`output${product.id}`).textContent = formatNumber(priceOutputSum);
+                totalOutput += priceOutputSum;
+            });
+            
+            // 更新总目标和产值
+            document.getElementById('targetSurgeries').textContent = formatNumber(totalSurgeries);
+            document.getElementById('totalOutput').textContent = formatNumber(totalOutput);
+        }
+        
+        // 计算年度计划
+        function calculateAnnualPlan() {
+            const totalSurgeries = parseInt(document.getElementById('totalSurgeries').value) || 0;
+            const totalOutput = products.reduce((sum, product, index) => sum + (state.productData.outputs[index] || 0), 0);
+            
+            for (let year = 1; year <= state.projectDuration; year++) {
+                const completion = state.annualCompletions[year-1] || 0;
+                const annualSurgery = Math.round(totalSurgeries * (completion / 100));
+                const annualOutput = Math.round(totalOutput * (completion / 100));
+                
+                // 更新年度总手术量和产值
+                document.getElementById(`annualSurgery${year}`).textContent = annualSurgery;
+                document.getElementById(`annualOutput${year}`).textContent = formatNumber(annualOutput);
+                
+                // 计算各产品年度数据
+                let yearSurgerySum = 0;
+                let yearOutputSum = 0;
+                
+                products.forEach(product => {
+                    const productTotalSurgery = state.productData.surgeryCounts[product.id-1] || 0;
+                    const productAnnualSurgery = Math.round(productTotalSurgery * (completion / 100));
+                    const productTotalOutput = state.productData.outputs[product.id-1] || 0;
+                    const productAnnualOutput = Math.round(productTotalOutput * (completion / 100));
+                    const ratio = productTotalSurgery > 0 ? (productAnnualSurgery / productTotalSurgery) * 100 : 0;
+                    
+                    // 更新年度产品数据
+                    document.getElementById(`year${year}Surgery${product.id}`).textContent = productAnnualSurgery;
+                    document.getElementById(`year${year}Ratio${product.id}`).textContent = `${ratio.toFixed(1)}%`;
+                    document.getElementById(`year${year}Output${product.id}`).textContent = formatNumber(productAnnualOutput);
+                    
+                    yearSurgerySum += productAnnualSurgery;
+                    yearOutputSum += productAnnualOutput;
+                });
+                
+                // 计算覆盖率
+                const coverage = totalSurgeries > 0 ? (annualSurgery / totalSurgeries) * 100 : 0;
+                document.getElementById(`coverage${year}`).textContent = `${coverage.toFixed(1)}%`;
+            }
+        }
+        
+        // 计算收益分配
+        function calculateRevenueDistribution() {
+            const totalOutput = products.reduce((sum, product, index) => sum + (state.productData.outputs[index] || 0), 0);
+            
+            // 计算各参与方总收益
+            revenueParticipants.forEach(participant => {
+                const ratio = parseFloat(document.getElementById(`${participant.id}Share`).value) || 0;
+                const totalRevenue = totalOutput * (ratio / 100);
+                
+                // 更新总收益
+                document.getElementById(`${participant.id}TotalRevenue`).textContent = formatNumber(totalRevenue);
+                
+                // 计算各产品收益
+                products.forEach(product => {
+                    const productOutput = state.productData.outputs[product.id-1] || 0;
+                    const productRevenue = productOutput * (ratio / 100);
+                    document.getElementById(`${participant.id}Revenue${product.id}`).textContent = formatNumber(productRevenue);
+                });
+                
+                // 计算各年度收益
+                let allYearRevenue = 0;
+                for (let year = 1; year <= state.projectDuration; year++) {
+                    const completion = state.annualCompletions[year-1] || 0;
+                    const yearRevenue = totalRevenue * (completion / 100);
+                    document.getElementById(`${participant.id}Year${year}Revenue`).textContent = formatNumber(yearRevenue);
+                    allYearRevenue += yearRevenue;
+                }
+                
+                // 更新年度总计收益
+                document.getElementById(`${participant.id}AllYearRevenue`).textContent = formatNumber(allYearRevenue);
+                
+                // 更新公司收益摘要（如果是公司）
+                if (participant.id === 'company') {
+                    document.getElementById('companyProfit').textContent = formatNumber(allYearRevenue);
+                }
+            });
+        }
+        
+        // 更新图表数据
+        function updateCharts() {
+            // 更新手术量走势预测图表
+            products.forEach((product, productIndex) => {
+                const productData = [];
+                for (let year = 1; year <= state.projectDuration; year++) {
+                    const surgery = parseInt(document.getElementById(`year${year}Surgery${product.id}`).textContent) || 0;
+                    productData.push(surgery);
+                }
+                surgeryChart.data.datasets[productIndex].data = productData;
+            });
+            surgeryChart.update();
+            
+            // 更新年度收益对比图表
+            revenueParticipants.forEach((participant, participantIndex) => {
+                const revenueData = [];
+                for (let year = 1; year <= state.projectDuration; year++) {
+                    const revenue = parseFloat(document.getElementById(`${participant.id}Year${year}Revenue`).textContent.replace(/,/g, '')) || 0;
+                    revenueData.push(revenue);
+                }
+                revenueChart.data.datasets[participantIndex].data = revenueData;
+            });
+            revenueChart.update();
+            
+            // 更新产品收益分布图表
+            const productOutputs = products.map((product, index) => state.productData.outputs[index] || 0);
+            productDistributionChart.data.datasets[0].data = productOutputs;
+            productDistributionChart.update();
+            
+            // 更新各年度手术量对比图表
+            for (let year = 1; year <= state.projectDuration; year++) {
+                const yearData = products.map(product => {
+                    return parseInt(document.getElementById(`year${year}Surgery${product.id}`).textContent) || 0;
+                });
+                surgeryComparisonChart.data.datasets[year-1].data = yearData;
+            }
+            surgeryComparisonChart.update();
+        }
+        
+        // 更新摘要信息
+        function updateSummary() {
+            const totalSurgeries = parseInt(document.getElementById('totalSurgeries').value) || 0;
+            const totalOutput = products.reduce((sum, product, index) => sum + (state.productData.outputs[index] || 0), 0);
+            const companyRatio = parseFloat(document.getElementById('companyShare').value) || 0;
+            const companyProfit = totalOutput * (companyRatio / 100);
+            
+            document.getElementById('targetSurgeries').textContent = formatNumber(totalSurgeries);
+            document.getElementById('totalOutput').textContent = formatNumber(totalOutput);
+            document.getElementById('companyProfit').textContent = formatNumber(companyProfit);
+        }
+        
+        // 格式化数字为带千分位的格式
+        function formatNumber(num) {
+            return num.toLocaleString('zh-CN', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+        
+        // 更新年度设备分布部分（完整实现）
+    </script>
+</body>
+</html>
